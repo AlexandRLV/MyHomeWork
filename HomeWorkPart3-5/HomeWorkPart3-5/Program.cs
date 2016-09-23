@@ -52,7 +52,7 @@ namespace HomeWorkPart3_5
                     k++;
                 }
             }
-
+            Console.WriteLine(k);
         }
     }
 }
