@@ -15,8 +15,8 @@ namespace HomeWorkLongAriphmetics
         private int exp;
         // Знак числа.
         private int sign;
-
-        //private int maxexp=10;
+        // Переменная для хранения точности счёта(сколько знаков считать).
+        private int maxexp=10;
 
         public LongNumber(string s) // Конструктор, принимающий на вход строку с числом.
         {
@@ -57,20 +57,21 @@ namespace HomeWorkLongAriphmetics
             this.num.Add(0);
         }
 
-        /*public void SetMaxExp(int k)
+        public void SetMaxExp(int k) // Метод задания точности.
         {
             this.maxexp = k;
         }
 
-        public int GetExp()
+        public int GetExp() // Метод получения точности.
         {
             return this.exp;
-        }*/
+        }
 
         public void WriteOut() // Метод вывода числа.
         {
             // Запоминаем длину.
             int n = this.num.Count;
+            // Удаляем лишние нули.
             this.RemoveZeros();
             // Выводим минус, если отрицательное.
             if (this.sign<0)
@@ -142,6 +143,17 @@ namespace HomeWorkLongAriphmetics
                     this.num.Add(0);
                 }
             }
+        }
+
+        public LongNumber Abs(LongNumber x) // Метод, возвращающий модуль числа.
+        {
+            // Переменная для ответа.
+            LongNumber a = new LongNumber();
+            // Присваиваем, чтобы не менять исходную переменную.
+            a.EqualTo(x);
+            // Возвращаем модуль знака и возвращаем число.
+            a.sign = Math.Abs(a.sign);
+            return a;
         }
 
         public static LongNumber operator + (LongNumber x1, LongNumber y1) // Перегрузка оператора сложения.
@@ -495,7 +507,8 @@ namespace HomeWorkLongAriphmetics
                 string s = Convert.ToString(y);
                 LongNumber y0 = new LongNumber(s);
                 a.EqualTo(x * y0);
-            }            
+            }
+            a.exp = x.exp;
             // Удаляем нули и возвращаем.
             a.RemoveZeros();
             return a;
@@ -531,7 +544,7 @@ namespace HomeWorkLongAriphmetics
             LongNumber y = new LongNumber();
             y.EqualTo(y1);
             // Переменная для ответа.
-            bool b = true;
+            bool b = false;
             // Если знак первого меньше, то ложь.
             if (x.sign<y.sign)            
                 return false;            
@@ -630,7 +643,7 @@ namespace HomeWorkLongAriphmetics
                 // Если остался перенос, считаем до 15 знака после запятой.
                 if (p>0)
                 {
-                    while ((a.exp<15)&&(p!=0))
+                    while ((a.exp<x.maxexp)&&(p!=0))
                     {
                         b = p * 10;
                         p = b % y;
@@ -652,25 +665,107 @@ namespace HomeWorkLongAriphmetics
             return a;
         }
 
-        public static LongNumber operator / (LongNumber x1, LongNumber y1) // Деление длинных чисел.
+        //public static LongNumber operator / (LongNumber x1, LongNumber y1) // Деление длинных чисел.
+        //{
+        //    // Переменная для ответа.
+        //    LongNumber a = new LongNumber();
+        //    // Если второе число равно нулю, возвращаем ноль.
+        //    if ((y1.num.Count == 1) && (y1.num[0] == 0))
+        //    {
+        //        return a;
+        //    }
+        //    // Сохраняем входные переменные, т.к., возможно, будем их позже менять.
+        //    LongNumber x = new LongNumber();
+        //    x.EqualTo(x1);
+        //    LongNumber y = new LongNumber();
+        //    y.EqualTo(y1);
+        //    // Если у второго числа есть дробная часть.
+        //    if (y.exp>0)
+        //    {
+        //        // Если у первого она не меньше, двигаем оба, пока второе не станет целым.
+        //        if (x.exp>=y.exp)
+        //        {
+        //            x.exp -= y.exp;
+        //            y.exp = 0;
+        //        }
+        //        // Если у первого она меньше, добавляем нули и двигаем оба.
+        //        else
+        //        {
+        //            for (int i=0;i<y.exp-x.exp;i++)
+        //            {
+        //                x.num.Insert(0, 0);
+        //            }
+        //            y.exp = 0;
+        //            x.exp = 0;
+        //        }
+        //    }
+        //    // Сохраняем знак и делаем оба числа положительными.
+        //    int sign = x.sign * y.sign;
+        //    x.sign = Math.Abs(x.sign);
+        //    y.sign = Math.Abs(y.sign);
+        //    // Переменная для экспоненты в ответе.
+        //    // В ответе её пока что не меняем, т.к. прибавляем единицу только к целой части.
+        //    int e = 0;
+        //    // Пока первое число не меньше второго.
+        //    while (!(x < y))
+        //    {
+        //        // Вычитаем из первого второе и прибавляем единицу к ответу.
+        //        x.EqualTo(x - y);
+        //        a.PlusOne();
+        //    }
+        //    bool c = true;
+        //    LongNumber x2 = new LongNumber();
+        //    LongNumber b = new LongNumber("1");
+        //    LongNumber eps = new LongNumber();
+        //    eps.EqualTo(b / x.maxexp);
+        //    // Пока в первом числе есть цифры и пока не дошли до 15 знака после запятой.
+        //    while (((x.num.Count>1)||(x.num[0]!=0))&&(c))
+        //    {
+        //        x2.EqualTo(x);
+        //        // Добавляем ячейку в ответ.
+        //        a.num.Insert(0, 0);
+        //        // Увеличиваем экспоненту.
+        //        //e++;
+        //        // Добавляем ячейку в делимое, что равносильно *10.
+        //        x.num.Insert(0, 0);
+        //        // Опять считаем сколько раз второе содержится в первом.
+        //        while (!(x < y))
+        //        {
+        //            x.EqualTo(x - y);
+        //            a.PlusOne();
+        //        }
+
+        //        if (x2-x<eps)
+        //        {
+        //            c = false;
+        //        }
+        //    }
+        //    // Записываем экспоненту и знак в ответ.
+        //    a.exp = e+x.exp;
+        //    a.sign = sign;
+        //    // Удаляем лищние нули и возвращаем.
+        //    a.RemoveZeros();
+        //    return a;
+        //}
+
+        public static LongNumber operator / (LongNumber x1, LongNumber y1)
         {
             // Переменная для ответа.
             LongNumber a = new LongNumber();
-            // Если второе число равно нулю, возвращаем ноль.
-            if ((y1.num.Count == 1) && (y1.num[0] == 0))
-            {
-                return a;
-            }
             // Сохраняем входные переменные, т.к., возможно, будем их позже менять.
             LongNumber x = new LongNumber();
             x.EqualTo(x1);
             LongNumber y = new LongNumber();
             y.EqualTo(y1);
+            // Запоминаем длины чисел.
+            int xn = x.num.Count, yn = y.num.Count;
+            // Переменная для переноса.
+            int p = 0;
             // Если у второго числа есть дробная часть.
-            if (y.exp>0)
+            if (y.exp > 0)
             {
                 // Если у первого она не меньше, двигаем оба, пока второе не станет целым.
-                if (x.exp>=y.exp)
+                if (x.exp >= y.exp)
                 {
                     x.exp -= y.exp;
                     y.exp = 0;
@@ -678,111 +773,152 @@ namespace HomeWorkLongAriphmetics
                 // Если у первого она меньше, добавляем нули и двигаем оба.
                 else
                 {
-                    for (int i=0;i<y.exp-x.exp;i++)
+                    for (int i = 0; i < y.exp - x.exp; i++)
                     {
                         x.num.Insert(0, 0);
+                        xn++;
                     }
                     y.exp = 0;
                     x.exp = 0;
                 }
             }
-            // Сохраняем знак и делаем оба числа положительными.
-            int sign = x.sign * y.sign;
-            x.sign = Math.Abs(x.sign);
-            y.sign = Math.Abs(y.sign);
-            // Переменная для экспоненту в ответе.
-            // В ответе её пока что не меняем, т.к. прибавляем единицу только к целой части.
-            int e = 0;
-            // Пока первое число не меньше второго.
-            while (!(x < y))
+            // Разность длин чисел.
+            int c = xn - yn;
+            // Двигаем левое число до конца правого, если оно короче, с запоминанием исходной позиции.
+            for (int i=0;i<c-1;i++)
             {
-                // Вычитаем из первого второе и прибавляем единицу к ответу.
-                x.EqualTo(x - y);
-                a.PlusOne();
+                y.num.Insert(0, 0);
             }
-            //bool b = true;
-            //int l=-11;
-            // Пока в первом числе есть цифры и пока не дошли до 15 знака после запятой.
-            while (((x.num.Count>1)||(x.num[0]!=0))&&(e<=15))
+            // 
+            p = x.num[xn - 1];
+            // Переменная для сохранения предыдущего результата.
+            LongNumber q = new LongNumber();
+            // Переменная для проверки длины чисел.
+            LongNumber w = new LongNumber();
+            // Флаг для проверки.
+            bool b = true;
+            // Переменная для ранения текущей позиции запятой.
+            int e = 0;
+            // Переменная для сохранения точности.
+            int e1 = x.maxexp;
+            // Пока не дошли до удвоенной точности.
+            while ((b)&&(e<=x.maxexp*2))
             {
-                // Добавляем ячейку в ответ.
-                a.num.Insert(0, 0);
-                // Увеличиваем экспоненту.
-                e++;
-                // Добавляем ячейку в делимое, что равносильно *10.
-                x.num.Insert(0, 0);
-                // Опять считаем сколько раз второе содержится в первом.
-                while (!(x < y))
+                // Пока первое число не меньше второго, вычитаем из него второе.
+                while (!(x<y))
                 {
                     x.EqualTo(x - y);
                     a.PlusOne();
                 }
-                /*if (e==x.maxexp)
+                // Если первое число превратилось в ноль.
+                if ((x.num.Count == 1) && (x.num[0] == 0))
                 {
-                    l = a.num[0];
-                }
-                else if (e>x.maxexp)
-                {
-                    if (a.num[e-x.maxexp]-l==0)
+                    // Если второе число всё ещё сдвинуто, добавляем нужное число нулей и выходим из цикла.
+                    if (y.num.Count>yn)
                     {
-                        b = false;
+                        for (int j=0;j<yn;j++)
+                        {
+                            a.num.Insert(0, 0);
+                        }
                     }
+                    break;
+                }
+                // Если первое не ноль и второе сдвинуто, двигаем второе на один разряд обратно.
+                if (y.num.Count>yn)
+                {
+                    y.num.RemoveAt(0);
+                }
+                // Если первое не ноль и второе не сдвинуто.
+                else
+                {
+                    // Увеличиваем позицию запятой в ответе.
+                    e++;
+                    // Если не дошли до указанной точности, добавляем ноль в первое число.
+                    if (e <= e1)
+                    {
+                        x.num.Insert(0, 0);
+                    }
+                    // Если дошли.
                     else
                     {
-                        l = a.num[e - x.maxexp];
+                        // Сравниваем значения текущего и предыдущего шагов.
+                        w.EqualTo(a - q);
+                        // Идём с позиции запятой до указанной точности.
+                        int j = x.num.Count;
+                        while (j >= e1)
+                        {
+                            // Если есть не ноль в разности, выходим из цикла.
+                            if (w.num[j-1] != 0)
+                            {
+                                break;
+                            }
+                            j--;
+                        }
+                        // Если дошли до указанной точности,
+                        // то бишь, в разности текущего и предыдущего все нули,
+                        // то бишь, разряды текущего шага до указанной точности не изменились,
+                        // выходим из цикла.
+                        if (j <= e1)
+                        {
+                            break;
+                        }
                     }
-                }*/
+                }
+                // Сохраняем значение текущего шага.
+                q.EqualTo(a);
+                // Добавляем разряд в ответ.
+                a.num.Insert(0, 0);
             }
-            // Записываем экспоненту и знак в ответ.
+            // Записываем экспоненту в ответ.
             a.exp = e+x.exp;
-            a.sign = sign;
-            // Удаляем лищние нули и возвращаем.
-            a.RemoveZeros();
+            // Записываем знак в ответ и возвращаем.
+            a.sign = x.sign * y.sign;
             return a;
         }
 
-        public void UpToPow(LongNumber y1) // Бинарное возведение в степень.
+        public static LongNumber UpToPow(LongNumber x1,LongNumber y1) // Бинарное возведение в степень.
         {
             // Переменная для ответа.
             LongNumber a = new LongNumber("1");
             // "Длинная" единица, для удобства.
             LongNumber b = new LongNumber("1");
             // Сохраняем входные данные, т.к., возможно, будем их менять.
+            LongNumber x = new LongNumber();
+            x.EqualTo(x1);
             LongNumber y = new LongNumber();
             y.EqualTo(y1);
-            // Если степень равна нулю, возвращаем единицу.
-            if ((y.num.Count < 1) && (y.num[0] == 0))
-            {
-                this.EqualTo(b);
-            }
+            a.EqualTo(x);
             // Если степень целая, считаем.
             if (y.exp==0)
             {
-                // Пока степень не равна нулю.
-                while ((y.num.Count > 1) || (y.num[0] != 0))
+                if ((y.num.Count == 1) && (y.num[0] == 0))
                 {
-                    // Если степень чётная, возводим ответ в квадрат и делим её пополам.
-                    if (y.num[0]%2==0)
-                    {
-                        a.EqualTo(this * this);
-                        y.EqualTo(y / 2);
-                    }
-                    // Если нечётная, умножаем ответ на основание и вычитаем единицу из степени.
-                    else
-                    {
-                        a.EqualTo(a * this);
-                        y.EqualTo(y - b);
-                    }
+                    return b;
                 }
-                // Если степень отрицательна, делим единицу на ответ.
-                if (y.sign<0)
+                if (y.num[0] % 2 == 1)
                 {
-                    a.EqualTo(b / a);
+                    y.EqualTo(y - b);
+                    y.EqualTo(UpToPow(x, y));
+                    y.EqualTo(y * x);
+                    return y;
+                }
+                else
+                {
+                    y.EqualTo(y / 2);
+                    a.EqualTo(UpToPow(x,y));
+                    a.EqualTo(a * a);
+                    return a;
                 }
             }
             // Удаляем лишние нули и возвращаем.
             a.RemoveZeros();
-            this.EqualTo(a);
+            return a;
+        }
+
+        public static LongNumber UpToPow(LongNumber x, int y)
+        {
+            LongNumber a = new LongNumber(Convert.ToString(y));
+            return UpToPow(x, a);
         }
 
         public static LongNumber Min(LongNumber x, LongNumber y) // Метод нахождения минимального.
@@ -799,7 +935,7 @@ namespace HomeWorkLongAriphmetics
             // Присваиваем экспоненту и знак.
             this.exp = x.exp;
             this.sign = x.sign;
-            //this.maxexp = x.maxexp;
+            this.maxexp = x.maxexp;
             // Удаляем всё в исходном числе.
             this.num.RemoveRange(0, this.num.Count);
             // Записываем мантиссу входного числа в исходное.
