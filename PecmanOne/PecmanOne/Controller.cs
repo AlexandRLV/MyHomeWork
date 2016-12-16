@@ -10,7 +10,7 @@ namespace PecmanOne
 {
     class Controller
     {
-        private int x, y, level, levelspeed,record;
+        private int x, y, level, levelspeed, time;
 
         public Controller(int level)
         {
@@ -109,7 +109,7 @@ namespace PecmanOne
             ConsoleKeyInfo key = new ConsoleKeyInfo();
             int counter = 0;
             bool isgoingtocorner = false;
-            this.record = 0;
+            this.time = 0;
             for (int i=0;i<3;i++)
             {
                 Console.SetCursorPosition(32, 14);
@@ -262,7 +262,7 @@ namespace PecmanOne
                 Console.SetCursorPosition(73, 2);
                 Console.WriteLine("{0}", hero.GetLives());
                 Console.SetCursorPosition(72, 3);
-                Console.WriteLine("{0}", record);
+                Console.WriteLine("{0}", time);
                 if (!f.ArePoints())
                 {
                     break;
@@ -270,13 +270,14 @@ namespace PecmanOne
                 Console.SetCursorPosition(0, 0);
                 Thread.Sleep(levelspeed);
                 f.ClearField();
-                this.record++;
+                this.time++;
             }
+            this.time = hero.GetScore();
         }
 
         public int GetRecord()
         {
-            return this.record;
+            return this.time;
         }
     }
 }
