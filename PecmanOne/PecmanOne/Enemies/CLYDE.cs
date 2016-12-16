@@ -12,11 +12,14 @@ namespace PecmanOne
         {
             this.x = x;
             this.y = y;
+            this.xstart = x;
+            this.ystart = y;
             this.xprev = x;
             this.yprev = y;
             this.cornerx = 30;
             this.cornery = 40;
             this.color = ConsoleColor.White;
+            this.canmove = false;
         }
 
         public void SetTarget(MainHero hero)

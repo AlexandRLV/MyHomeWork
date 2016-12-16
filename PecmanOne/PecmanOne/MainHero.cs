@@ -9,11 +9,15 @@ namespace PecmanOne
     class MainHero
     {
         private int x, y;
+        private int xstart, ystart;
         private int score;
         private int lives;
         private int speedx;
         private int speedy;
         private int direction;
+        private int supercounter;
+        private bool SUPERMODE;
+        private int maxsupercounter;
         ConsoleColor color = new ConsoleColor();
 
         public int GetX()
@@ -41,6 +45,11 @@ namespace PecmanOne
             this.score = x;
         }
 
+        public void AddScore(int x)
+        {
+            this.score += x;
+        }
+
         public int GetLives()
         {
             return this.lives;
@@ -51,11 +60,27 @@ namespace PecmanOne
             this.lives = x;
         }
 
+        public void SetSuperCounter(int s)
+        {
+            this.maxsupercounter = s;
+        }
+
+        public void WasCatched()
+        {
+            this.lives--;
+            this.x = this.xstart;
+            this.y = this.ystart;
+        }
+
         public MainHero(int x, int y)
         {
             this.x = x;
             this.y = y;
+            this.xstart = x;
+            this.ystart = y;
             color = ConsoleColor.Green;
+            this.SUPERMODE = false;
+            this.supercounter = 0;
         }
 
         public void SetSpeed(int speedx, int speedy)
@@ -73,6 +98,15 @@ namespace PecmanOne
         {
             f.field[this.x, this.y] = 'O';
             f.fieldcolor[this.x, this.y] = this.color;
+            //Console.SetCursorPosition(this.x, this.y * 2);
+            //Console.ForegroundColor = this.color;
+            //Console.Write("O");
+            //Console.ResetColor();
+        }
+
+        public void DeleteFromField(Field f)
+        {
+            f.field[this.x, this.y] = ' ';
         }
 
         public void Moving(Field f)
@@ -104,6 +138,30 @@ namespace PecmanOne
                 this.lives++;
                 f.DeleteLive(this.x, this.y);
             }
+            if (f.IsEnergy(this.x, this.y))
+            {
+                this.SUPERMODE = true;
+                this.supercounter = this.maxsupercounter;
+                f.DeleteEnergy(this.x, this.y);
+            }
+            if (this.supercounter>0)
+            {
+                this.supercounter--;
+            }
+            else
+            {
+                this.SUPERMODE = false;
+            }
+        }
+
+        public bool SuperMode()
+        {
+            return this.SUPERMODE;
+        }
+
+        public int GetSuperCounter()
+        {
+            return this.supercounter;
         }
     }
 }

@@ -19,6 +19,9 @@ namespace PecmanOne
         private int[,] points;
         private int livesnum;
         private int[,] lives;
+        private int energynum;
+        private int[,] energyes;
+        char energy = '$';
         char live = '@';
         char point = '°';
 
@@ -35,11 +38,14 @@ namespace PecmanOne
             this.points = new int[x * y, 2];
             this.lives = new int[x * y, 2];
             this.fieldcolor = new ConsoleColor[x, y];
+            this.energyes = new int[x * y,2];
+            this.energynum = 0;
             ClearField();
         }
 
-        public void WriteField()
+        public void WriteField(int x, int y)
         {
+            Console.SetCursorPosition(x, y);
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write('┌');
             for (int i = 0; i < this.maxy; i++)
@@ -84,8 +90,9 @@ namespace PecmanOne
             this.WriteObstacles();
             this.WritePoints();
             this.WriteLives();
+            this.WriteEnergy();
         }
-
+        
         public bool IsClear(int x, int y)
         {
             if ((x < this.maxx) && (x >= 0) && (y < this.maxy) && (y >= 0))
@@ -130,6 +137,19 @@ namespace PecmanOne
                 this.livesnum++;
                 this.field[x, y] = this.live;
                 this.fieldcolor[x, y] = ConsoleColor.DarkRed;
+            }
+        }
+
+        public void CreateEnergy(int x, int y)
+        {
+            if (this.IsClear(x, y))
+            {
+                int n = this.energynum;
+                this.energyes[n, 0] = x;
+                this.energyes[n, 1] = y;
+                this.energynum++;
+                this.field[x, y] = this.energy;
+                this.fieldcolor[x, y] = ConsoleColor.Cyan;
             }
         }
 
@@ -182,6 +202,18 @@ namespace PecmanOne
             }
         }
 
+        private void WriteEnergy()
+        {
+            int n = this.energynum;
+            for (int i = 0; i < n; i++)
+            {
+                int x = this.energyes[i, 0];
+                int y = this.energyes[i, 1];
+                this.field[x, y] = this.energy;
+                this.fieldcolor[x, y] = ConsoleColor.DarkCyan;
+            }
+        }
+
         public void DeletePoint(int x,int y)
         {
             int n = this.pointnum;
@@ -226,6 +258,28 @@ namespace PecmanOne
             this.field[x, y] = ' ';
         }
 
+        public void DeleteEnergy(int x, int y)
+        {
+            int n = this.energynum;
+            int i = 0;
+
+            while (i < n)
+            {
+                if ((this.energyes[i, 0] == x) && (this.energyes[i, 1] == y))
+                {
+                    break;
+                }
+                i++;
+            }
+            for (int j = i; j < n - 1; j++)
+            {
+                this.energyes[j, 0] = this.energyes[j + 1, 0];
+                this.energyes[j, 1] = this.energyes[j + 1, 1];
+            }
+            this.energynum--;
+            this.field[x, y] = ' ';
+        }
+
         public bool ArePoints()
         {
             if (this.pointnum>0)
@@ -262,6 +316,25 @@ namespace PecmanOne
             if ((x < this.maxx) && (x >= 0) && (y < this.maxy) && (y >= 0))
             {
                 if ((this.field[x, y] == this.live))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public bool IsEnergy(int x, int y)
+        {
+            if ((x < this.maxx) && (x >= 0) && (y < this.maxy) && (y >= 0))
+            {
+                if ((this.field[x, y] == this.energy))
                 {
                     return true;
                 }

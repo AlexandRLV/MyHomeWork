@@ -18,11 +18,14 @@ namespace PecmanOne
         {
             this.x = x;
             this.y = y;
+            this.xstart = x;
+            this.ystart = y;
             this.xprev = x;
             this.yprev = y;
             this.cornerx = -1;
             this.cornery = -1;
             this.color = ConsoleColor.Red;
+            this.canmove = true;
         }
     }
 }

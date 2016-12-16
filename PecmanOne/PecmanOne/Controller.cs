@@ -10,31 +10,20 @@ namespace PecmanOne
 {
     class Controller
     {
-        private int x, y, level;
+        private int x, y, level, levelspeed,record;
 
         public Controller(int level)
         {
             this.x = 28;
             this.y = 31;
-            if (level<5)
+            this.level = level;
+            if (level<15)
             {
-                this.level = 150;
-            }
-            else if (level<10)
-            {
-                this.level = 100;
-            }
-            else if (level<15)
-            {
-                this.level = 75;
-            }
-            else if (level <20)
-            {
-                this.level = 50;
+                this.levelspeed = 75;
             }
             else
             {
-                this.level = 30;
+                this.levelspeed = 30;
             }
         }
 
@@ -59,9 +48,14 @@ namespace PecmanOne
                     {
                         f.CreateLives(j, i);
                     }
+                    else if (c == '$')
+                    {
+                        f.CreateEnergy(j, i);
+                    }
                 }
                 file.ReadLine();
             }
+            file.Close();
         }
 
         public void Start()
@@ -71,11 +65,31 @@ namespace PecmanOne
             WriteLevel(f);
             MainHero hero = new MainHero(13, 23);
             hero.SetScore(0);
+            if (this.level<5)
+            {
+                hero.SetSuperCounter(10);
+            }
+            else if (this.level<10)
+            {
+                hero.SetSuperCounter(8);
+            }
+            else if (this.level<15)
+            {
+                hero.SetSuperCounter(6);
+            }
+            else if (this.level<20)
+            {
+                hero.SetSuperCounter(4);
+            }
+            else
+            {
+                hero.SetSuperCounter(2);
+            }
             BLINKY blinky = new BLINKY(13, 11);
-            PINKY pinky = new PINKY(13, 14);
-            INKY inky = new INKY(14, 14);
-            CLYDE clyde = new CLYDE(12, 14);
-            if (this.level>50)
+            PINKY pinky = new PINKY(13, 13);
+            INKY inky = new INKY(14, 15);
+            CLYDE clyde = new CLYDE(12, 15);
+            if (this.levelspeed>50)
             {
                 hero.SetLives(3);
             }
@@ -89,8 +103,22 @@ namespace PecmanOne
             Console.Write("Points:");
             Console.SetCursorPosition(65, 2);
             Console.Write("Lives:");
+            Console.SetCursorPosition(65, 3);
+            Console.Write("Time:");
             Console.SetCursorPosition(0, 0);
             ConsoleKeyInfo key = new ConsoleKeyInfo();
+            int counter = 0;
+            bool isgoingtocorner = false;
+            this.record = 0;
+            for (int i=0;i<3;i++)
+            {
+                Console.SetCursorPosition(32, 14);
+                Console.WriteLine("{0}", 3 - i);
+                Thread.Sleep(500);
+            }
+            Console.SetCursorPosition(32, 14);
+            Console.WriteLine("GO!");
+            Thread.Sleep(1000);
             while (true)
             {
                 if (Console.KeyAvailable)
@@ -98,23 +126,35 @@ namespace PecmanOne
                     key = Console.ReadKey(true);
                     if (key.Key == ConsoleKey.RightArrow)
                     {
-                        hero.SetSpeed(0, 1);
-                        hero.SetDirection(0);
+                        if (f.IsClear(hero.GetX(),hero.GetY()+1))
+                        {
+                            hero.SetSpeed(0, 1);
+                            hero.SetDirection(0);
+                        }
                     }
                     else if (key.Key == ConsoleKey.LeftArrow)
                     {
-                        hero.SetSpeed(0, -1);
-                        hero.SetDirection(2);
+                        if (f.IsClear(hero.GetX(), hero.GetY() - 1))
+                        {
+                            hero.SetSpeed(0, -1);
+                            hero.SetDirection(2);
+                        }                            
                     }
                     else if (key.Key == ConsoleKey.DownArrow)
                     {
-                        hero.SetSpeed(1, 0);
-                        hero.SetDirection(1);
+                        if (f.IsClear(hero.GetX() + 1, hero.GetY()))
+                        {
+                            hero.SetSpeed(1, 0);
+                            hero.SetDirection(1);
+                        }                            
                     }
                     else if (key.Key == ConsoleKey.UpArrow)
                     {
-                        hero.SetSpeed(-1, 0);
-                        hero.SetDirection(3);
+                        if (f.IsClear(hero.GetX() - 1, hero.GetY()))
+                        {
+                            hero.SetSpeed(-1, 0);
+                            hero.SetDirection(3);
+                        }                            
                     }
                     else if (key.Key == ConsoleKey.Escape)
                     {
@@ -122,32 +162,121 @@ namespace PecmanOne
                     }
                 }
                 hero.Moving(f);
-                blinky.SetTarget(hero);
-                blinky.MoveToTarget(f);
-                blinky.WriteOnField(f);
-                pinky.SetTarget(hero);
-                pinky.MoveToTarget(f);
-                pinky.WriteOnField(f);
-                inky.SetTarget(hero, blinky);
-                inky.MoveToTarget(f);
-                inky.WriteOnField(f);
-                clyde.SetTarget(hero);
-                clyde.MoveToTarget(f);
-                clyde.WriteOnField(f);
+                if (hero.GetScore()>30)
+                {
+                    inky.CanMove();
+                }
+                if (hero.GetScore()>100)
+                {
+                    clyde.CanMove();
+                }
+                if (((counter>=0)&&(counter<10))||((counter>=40)&&(counter<=50)) || ((counter >= 80) && (counter <= 90)))
+                {
+                    if (!isgoingtocorner)
+                    {
+                        blinky.SetTargetToCorner();
+                        pinky.SetTargetToCorner();
+                        inky.SetTargetToCorner();
+                        clyde.SetTargetToCorner();
+                        isgoingtocorner = true;
+                    }                    
+                    counter++;
+                }
+                else
+                {
+                    blinky.SetTarget(hero);
+                    pinky.SetTarget(hero);
+                    inky.SetTarget(hero, blinky);
+                    clyde.SetTarget(hero);
+                    isgoingtocorner = false;
+                    counter++;
+                }
+                if (hero.SuperMode())
+                {                    
+                    counter = 10;
+                    blinky.MoveAwayFromTarget(f);
+                    blinky.WriteOnField(f);
+                    pinky.MoveAwayFromTarget(f);
+                    pinky.WriteOnField(f);
+                    inky.MoveAwayFromTarget(f);
+                    inky.WriteOnField(f);
+                    clyde.MoveAwayFromTarget(f);
+                    clyde.WriteOnField(f);
+                    if (blinky.WasCatched(hero))
+                    {
+                        hero.AddScore(100);
+                        blinky.WasCatchedBySuperHero();
+                        counter = 0;
+                    }
+                    if (pinky.WasCatched(hero))
+                    {
+                        hero.AddScore(100);
+                        pinky.WasCatchedBySuperHero();
+                        counter = 0;
+                    }
+                    if (inky.WasCatched(hero))
+                    {
+                        hero.AddScore(100);
+                        inky.WasCatchedBySuperHero();
+                        counter = 0;
+                    }
+                    if (clyde.WasCatched(hero))
+                    {
+                        hero.AddScore(100);
+                        clyde.WasCatchedBySuperHero();
+                        counter = 0;
+                    }
+                    Console.SetCursorPosition(65, 4);
+                    Console.Write("SUPERMODE!!! Time left: {0}", hero.GetSuperCounter());
+                }
+                else
+                {
+                    Console.SetCursorPosition(65, 4);
+                    Console.Write("                            ");
+                    blinky.MoveToTarget(f);
+                    blinky.WriteOnField(f);
+                    pinky.MoveToTarget(f);
+                    pinky.WriteOnField(f);
+                    inky.MoveToTarget(f);
+                    inky.WriteOnField(f);
+                    clyde.MoveToTarget(f);
+                    clyde.WriteOnField(f);
+                }
+                if (((blinky.IsCatched(hero)) || (pinky.IsCatched(hero)) || (inky.IsCatched(hero)) || (clyde.IsCatched(hero))) && (!hero.SuperMode()))
+                {
+                    blinky.SetTargetToCorner();
+                    pinky.SetTargetToCorner();
+                    inky.SetTargetToCorner();
+                    clyde.SetTargetToCorner();
+                    counter = 0;
+                    hero.WasCatched();
+                }
+                if (hero.GetLives()==0)
+                {
+                    break;
+                }
                 hero.WriteOnField(f);
-                f.WriteField();
+                f.WriteField(0,0);
                 Console.SetCursorPosition(73, 1);
                 Console.WriteLine("{0}", hero.GetScore());
                 Console.SetCursorPosition(73, 2);
                 Console.WriteLine("{0}", hero.GetLives());
+                Console.SetCursorPosition(72, 3);
+                Console.WriteLine("{0}", record);
                 if (!f.ArePoints())
                 {
                     break;
                 }
                 Console.SetCursorPosition(0, 0);
-                Thread.Sleep(level);
+                Thread.Sleep(levelspeed);
                 f.ClearField();
+                this.record++;
             }
+        }
+
+        public int GetRecord()
+        {
+            return this.record;
         }
     }
 }
