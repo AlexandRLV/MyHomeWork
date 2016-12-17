@@ -26,7 +26,7 @@ namespace PecmanOne
         char point = '°';
 
         public Field(int x, int y)
-        {
+        {           
             this.field = new char[x, y];
             this.maxx = x;
             this.maxy = y;

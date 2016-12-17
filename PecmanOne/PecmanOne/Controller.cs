@@ -14,6 +14,7 @@ namespace PecmanOne
 
         public Controller(int level)
         {
+            // Запоминаем размеры карты и уровень, ставим скорость игры.
             this.x = 28;
             this.y = 31;
             this.level = level;
@@ -27,10 +28,15 @@ namespace PecmanOne
             }
         }
 
-        public void WriteLevel(Field f)
+        public void WriteLevel(Field f, int n)
         {
             char c;
-            StreamReader file = new StreamReader(@"Field.txt");
+            string path = "Levels/Level" + Convert.ToString(n) + ".txt";
+            if (!File.Exists(path))
+            {
+                path = "Levels/MainLevel.txt";
+            }
+            StreamReader file = new StreamReader(@path);
             for (int i = 0; i < 31; i++)
             {
                 for (int j = 0; j < 28; j++)
@@ -60,9 +66,10 @@ namespace PecmanOne
 
         public void Start()
         {
+            // Создаём объекты поля и игрока, записываем нужный уровень в объект поля.
             Console.CursorVisible = false;
             Field f = new Field(this.x, this.y);
-            WriteLevel(f);
+            WriteLevel(f, this.level);
             MainHero hero = new MainHero(13, 23);
             hero.SetScore(0);
             if (this.level<5)
