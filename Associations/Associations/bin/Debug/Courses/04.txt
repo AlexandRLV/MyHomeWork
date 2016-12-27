@@ -1,0 +1,7 @@
+04
+Discrete
+false
+80
+60
+false
+true

@@ -1,0 +1,6 @@
+C:\Users\Александр\Source\Projects\Associations\Associations\bin\Debug\Associations.exe.config
+C:\Users\Александр\Source\Projects\Associations\Associations\bin\Debug\Associations.exe
+C:\Users\Александр\Source\Projects\Associations\Associations\bin\Debug\Associations.pdb
+C:\Users\Александр\Source\Projects\Associations\Associations\obj\Debug\Associations.csprojResolveAssemblyReference.cache
+C:\Users\Александр\Source\Projects\Associations\Associations\obj\Debug\Associations.exe
+C:\Users\Александр\Source\Projects\Associations\Associations\obj\Debug\Associations.pdb
