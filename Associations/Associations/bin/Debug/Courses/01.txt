@@ -1,0 +1,7 @@
+01
+Algebra
+false
+100
+80
+true
+true

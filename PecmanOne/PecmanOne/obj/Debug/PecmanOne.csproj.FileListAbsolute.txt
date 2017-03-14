@@ -1,0 +1,6 @@
+C:\Users\Александр\Source\Projects\PecmanOne\PecmanOne\bin\Debug\PecmanOne.exe.config
+C:\Users\Александр\Source\Projects\PecmanOne\PecmanOne\bin\Debug\PecmanOne.exe
+C:\Users\Александр\Source\Projects\PecmanOne\PecmanOne\bin\Debug\PecmanOne.pdb
+C:\Users\Александр\Source\Projects\PecmanOne\PecmanOne\obj\Debug\PecmanOne.exe
+C:\Users\Александр\Source\Projects\PecmanOne\PecmanOne\obj\Debug\PecmanOne.pdb
+C:\Users\Александр\Source\Projects\PecmanOne\PecmanOne\obj\Debug\PecmanOne.csprojResolveAssemblyReference.cache
