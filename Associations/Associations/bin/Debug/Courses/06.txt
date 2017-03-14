@@ -1,7 +1,0 @@
-06
-Physics
-true
-100
-80
-true
-true

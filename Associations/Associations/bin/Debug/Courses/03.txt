@@ -1,7 +1,0 @@
-03
-Matan
-false
-90
-60
-true
-true

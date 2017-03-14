@@ -1,7 +1,0 @@
-02
-Geometry
-false
-80
-70
-true
-true
